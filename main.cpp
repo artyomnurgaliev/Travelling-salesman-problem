@@ -33,30 +33,30 @@ void experiment(int N, int M){
         double min = INF;
         graph.find_tsp_with_bust(vec, min, 0);
         double real_res = min;
-
-        double near_res = graph.find_tsp_with_mst();
-        //double near_res = graph.find_tsp_with_busting_couples_and_eulerian_cycle();
+        //std::vector<std::vector<int>> next = graph.find_MST();
+        //double near_res = graph.find_tsp_with_mst(next);
+        double near_res = graph.find_tsp_with_busting_couples_and_eulerian_cycle();
         double approximation_quality = near_res/real_res;
         sum += approximation_quality;
         results.push_back(approximation_quality);
     }
     double avg = sum/M;
-    //std::cout.width(4);
+    std::cout.width(4);
 
-    //std::cout<<N<<"      |";
+    std::cout<<N<<"      |";
     sum = 0;
     for (int k = 0; k<M; ++k){
         sum += (results[k] - avg)*(results[k] - avg);
     }
-    //std::cout<<" "<<avg<<"   |";
+    std::cout<<" "<<avg<<"   |";
     double standard_deviation_of_approximation_quality = sqrt(sum/M);
-    //std::cout<<"  "<<standard_deviation_of_approximation_quality<<"\n";
+    std::cout<<"  "<<standard_deviation_of_approximation_quality<<"\n";
 
 }
 
 int main() {
-    //std::cout<<"   N      |   avg     |  st_dev  "<<std::endl;
-    //std::cout<<"----------+-----------+----------"<<std::endl;
+    std::cout<<"   N      |   avg     |  st_dev  "<<std::endl;
+    std::cout<<"----------+-----------+----------"<<std::endl;
     for (int i=2; i<11; ++i){
         experiment(i, M);
     }

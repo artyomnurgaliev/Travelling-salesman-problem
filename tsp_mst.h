@@ -36,7 +36,7 @@ public:
     explicit Graph(std::vector<std::pair<double ,double>>& input);
     ~Graph();
     std::vector<std::vector<int>> find_MST();
-    double find_tsp_with_mst();
+    double find_tsp_with_mst(std::vector<std::vector<int>>& next);
     void find_tsp_with_bust(std::vector<int> vec, double& min, int ind);
     double find_tsp_with_busting_couples_and_eulerian_cycle();
 };
