@@ -33,8 +33,7 @@ void experiment(int N, int M){
         double min = INF;
         graph.find_tsp_with_bust(vec, min, 0);
         double real_res = min;
-        //std::vector<std::vector<int>> next = graph.find_MST();
-        //double near_res = graph.find_tsp_with_mst(next);
+        //double near_res = graph.find_tsp_with_mst();
         double near_res = graph.find_tsp_with_busting_couples_and_eulerian_cycle();
         double approximation_quality = near_res/real_res;
         sum += approximation_quality;

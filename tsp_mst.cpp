@@ -124,7 +124,8 @@ void Graph::find_tsp_with_bust(std::vector<int> vec, double &min, int ind) {
     }
 }
 
-double Graph::find_tsp_with_mst(std::vector<std::vector<int>>& next) {
+double Graph::find_tsp_with_mst() {
+    std::vector<std::vector<int>> next = find_MST();
     std::vector<int> visited(nodes.size(), 0);
     std::vector<int> previdx(nodes.size(), 0);
     std::vector<int> idxs(nodes.size(), -1);
@@ -181,6 +182,13 @@ double Graph::find_tsp_with_busting_couples_and_eulerian_cycle() {
     }
     std::make_heap(edges_between_odd_vert.begin(), edges_between_odd_vert.end(), cmp);
 
+    std::vector<std::vector<int>> graph(nodes.size(), std::vector<int>(nodes.size()));
+    for (int i=0; i<next.size(); ++i){
+        for (auto item: next[i]){
+            graph[i][item] = 1;
+            graph[item][i] = 1;
+        }
+    }
     std::vector<int> visited(nodes.size(), 0);
     int cnt = 0;
     while (cnt != odd_vertices.size()){
@@ -192,15 +200,56 @@ double Graph::find_tsp_with_busting_couples_and_eulerian_cycle() {
         if (!visited[b] && !visited[e]) {
             visited[b] = true;
             visited[e] = true;
-            if (std::find(next[b].begin(), next[b].end(), e) == next[b].end())
-                next[b].emplace_back(e);
-            if (std::find(next[e].begin(), next[e].end(), b) == next[e].end())
-                next[e].emplace_back(b);
+            graph[b][e]++;
+            graph[e][b]++;
             cnt += 2;
         }
 
         edges_between_odd_vert.pop_back();
     }
 
-    return find_tsp_with_mst(next);
+    int n = nodes.size();
+
+    std::vector<int> deg(n);
+    for (int i=0; i<n; ++i)
+        for (int j=0; j<n; ++j)
+            deg[i] += graph[i][j];
+
+    int u = 0;
+    while (!deg[u])  ++u;
+
+    std::stack<int> stack;
+    stack.push(u);
+    std::vector<int> eulirian_cycle;
+    while (!stack.empty()) {
+        int v = stack.top();
+        int i;
+        for (i=0; i<n; ++i)
+            if (graph[v][i]) break;
+        if (i == n) {
+            eulirian_cycle.push_back (v);
+            stack.pop();
+        }
+        else {
+            --graph[v][i];
+            --graph[i][v];
+            stack.push(i);
+        }
+    }
+    double res = 0;
+    for (auto &i: visited){
+        i = 0;
+    }
+    std::vector<int> res_vec;
+    for (int i : eulirian_cycle) {
+        if (!visited[i]){
+            res_vec.push_back(i);
+            visited[i] = 1;
+        }
+    }
+    res_vec.push_back(res_vec[0]);
+    for (int i=1; i<res_vec.size(); ++i){
+        res += distance[res_vec[i]][res_vec[i-1]];
+    }
+    return res;
 }
